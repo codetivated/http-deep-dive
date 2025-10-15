@@ -25,6 +25,10 @@ export class PlacesService {
     return this.fetchPlaces(
       `${this.url}/user-places`,
       'Failed to fetch your FAVORITE places. Please try again later.'
+    ).pipe(
+      tap({
+        next: (userPlaces) => this.userPlaces.set(userPlaces),
+      })
     );
   }
 
