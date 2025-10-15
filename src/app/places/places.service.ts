@@ -32,9 +32,13 @@ export class PlacesService {
     );
   }
 
-  addPlaceToUserPlaces(placeId: string) {
+  // here we optimistically update the UI by updating the signal first
+  // before the HTTP request
+
+  addPlaceToUserPlaces(place: Place) {
+    this.userPlaces.update((previousPlaces) => [...previousPlaces, place]);
     return this.httpClient.put(`${this.url}/user-places`, {
-      placeId: placeId,
+      placeId: place.id,
     });
   }
 
