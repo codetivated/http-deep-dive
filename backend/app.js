@@ -1,50 +1,51 @@
-import fs from "node:fs/promises";
+import fs from 'node:fs/promises';
 
-import bodyParser from "body-parser";
-import express from "express";
+import bodyParser from 'body-parser';
+import express from 'express';
 
 const app = express();
 
-app.use(express.static("images"));
+app.use(express.static('images'));
 app.use(bodyParser.json());
 
 // CORS
 
 app.use((req, res, next) => {
-  res.setHeader("Access-Control-Allow-Origin", "*"); // allow all domains
-  res.setHeader("Access-Control-Allow-Methods", "GET, PUT, DELETE");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+  res.setHeader('Access-Control-Allow-Origin', '*'); // allow all domains
+  res.setHeader('Access-Control-Allow-Methods', 'GET, PUT, DELETE');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
   next();
 });
 
-app.get("/places", async (req, res) => {
+app.get('/places', async (req, res) => {
+  // simulated delay for demo purposes
   await new Promise((resolve) => setTimeout(resolve, 3000));
 
-  const fileContent = await fs.readFile("./data/places.json");
+  const fileContent = await fs.readFile('./data/places.json');
 
   const placesData = JSON.parse(fileContent);
 
   res.status(200).json({ places: placesData });
 });
 
-app.get("/user-places", async (req, res) => {
-  const fileContent = await fs.readFile("./data/user-places.json");
+app.get('/user-places', async (req, res) => {
+  const fileContent = await fs.readFile('./data/user-places.json');
 
   const places = JSON.parse(fileContent);
 
   res.status(200).json({ places });
 });
 
-app.put("/user-places", async (req, res) => {
+app.put('/user-places', async (req, res) => {
   const placeId = req.body.placeId;
 
-  const fileContent = await fs.readFile("./data/places.json");
+  const fileContent = await fs.readFile('./data/places.json');
   const placesData = JSON.parse(fileContent);
 
   const place = placesData.find((place) => place.id === placeId);
 
-  const userPlacesFileContent = await fs.readFile("./data/user-places.json");
+  const userPlacesFileContent = await fs.readFile('./data/user-places.json');
   const userPlacesData = JSON.parse(userPlacesFileContent);
 
   let updatedUserPlaces = userPlacesData;
@@ -54,17 +55,17 @@ app.put("/user-places", async (req, res) => {
   }
 
   await fs.writeFile(
-    "./data/user-places.json",
+    './data/user-places.json',
     JSON.stringify(updatedUserPlaces)
   );
 
   res.status(200).json({ userPlaces: updatedUserPlaces });
 });
 
-app.delete("/user-places/:id", async (req, res) => {
+app.delete('/user-places/:id', async (req, res) => {
   const placeId = req.params.id;
 
-  const userPlacesFileContent = await fs.readFile("./data/user-places.json");
+  const userPlacesFileContent = await fs.readFile('./data/user-places.json');
   const userPlacesData = JSON.parse(userPlacesFileContent);
 
   const placeIndex = userPlacesData.findIndex((place) => place.id === placeId);
@@ -76,7 +77,7 @@ app.delete("/user-places/:id", async (req, res) => {
   }
 
   await fs.writeFile(
-    "./data/user-places.json",
+    './data/user-places.json',
     JSON.stringify(updatedUserPlaces)
   );
 
@@ -85,10 +86,10 @@ app.delete("/user-places/:id", async (req, res) => {
 
 // 404
 app.use((req, res, next) => {
-  if (req.method === "OPTIONS") {
+  if (req.method === 'OPTIONS') {
     return next();
   }
-  res.status(404).json({ message: "404 - Not Found" });
+  res.status(404).json({ message: '404 - Not Found' });
 });
 
 app.listen(3000);
