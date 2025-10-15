@@ -49,4 +49,20 @@ export class AvailablePlacesComponent implements OnInit {
       subscription.unsubscribe();
     });
   }
+
+  onSelectPlace(selectedPlace: Place) {
+    console.log(selectedPlace);
+    this.httpClient
+      .put(`http://localhost:3000/user-places`, {
+        placeId: selectedPlace.id,
+      })
+      .subscribe({
+        next: (res) => {
+          console.log('Place added to user favorites:', res);
+        },
+        error: (error) => {
+          console.error('Error adding place to favorites:', error);
+        },
+      });
+  }
 }
