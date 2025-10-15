@@ -22,7 +22,8 @@ app.get('/places', async (req, res) => {
   // simulated delay for demo purposes
   await new Promise((resolve) => setTimeout(resolve, 3000));
 
-  return res.status(500).json({ message: 'Simulated server error' });
+  // simulate error for demo purposes
+  // return res.status(500).json({ message: 'Simulated server error' });
 
   const fileContent = await fs.readFile('./data/places.json');
 
