@@ -32,14 +32,25 @@ export class PlacesService {
     );
   }
 
-  // here we optimistically update the UI by updating the signal first
-  // before the HTTP request
-
   addPlaceToUserPlaces(place: Place) {
-    this.userPlaces.update((previousPlaces) => [...previousPlaces, place]);
-    return this.httpClient.put(`${this.url}/user-places`, {
-      placeId: place.id,
-    });
+    const previousPlaces = this.userPlaces();
+
+    if (!previousPlaces.some((p) => p.id === place.id)) {
+      this.userPlaces.set([...previousPlaces, place]);
+    }
+    return this.httpClient
+      .put(`${this.url}/user-places`, {
+        placeId: place.id,
+      })
+      .pipe(
+        catchError((errorRes) => {
+          console.log(errorRes);
+          this.userPlaces.set(previousPlaces);
+          return throwError(
+            () => new Error('Failed to add place to favorites.')
+          );
+        })
+      );
   }
 
   removeUserPlace(place: Place) {}
