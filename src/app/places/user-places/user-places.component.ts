@@ -3,6 +3,7 @@ import { Component, DestroyRef, inject, OnInit, signal } from '@angular/core';
 import { PlacesContainerComponent } from '../places-container/places-container.component';
 import { PlacesComponent } from '../places.component';
 import { PlacesService } from '../places.service';
+import { Place } from '../place.model';
 
 @Component({
   selector: 'app-user-places',
@@ -25,6 +26,21 @@ export class UserPlacesComponent implements OnInit {
         this.error.set(error.message);
       },
       complete: () => this.isFetching.set(false),
+    });
+    this.destroyRef.onDestroy(() => {
+      console.log('AvailablePlacesComponent destroyed');
+      subscription.unsubscribe();
+    });
+  }
+
+  onRemovePlace(place: Place) {
+    const subscription = this.placesService.removeUserPlace(place).subscribe({
+      next: (res) => {
+        console.log('Place removed from user favorites:', res);
+      },
+      error: (error) => {
+        console.error('Error removing place from favorites:', error);
+      },
     });
     this.destroyRef.onDestroy(() => {
       console.log('AvailablePlacesComponent destroyed');

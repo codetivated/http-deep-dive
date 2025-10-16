@@ -56,7 +56,24 @@ export class PlacesService {
       );
   }
 
-  removeUserPlace(place: Place) {}
+  removeUserPlace(place: Place) {
+    const previousPlaces = this.userPlaces();
+
+    if (previousPlaces.some((p) => p.id === place.id)) {
+      this.userPlaces.set(previousPlaces.filter((p) => p.id !== place.id));
+    }
+
+    return this.httpClient.delete(`${this.url}/user-places/${place.id}`).pipe(
+      catchError((errorRes) => {
+        console.log(errorRes);
+        this.userPlaces.set(previousPlaces);
+        this.errorService.showError('Failed to remove place from favorites.');
+        return throwError(
+          () => new Error('Failed to remove place from favorites.')
+        );
+      })
+    );
+  }
 
   private fetchPlaces(url: string, errorMessage: string) {
     return this.httpClient.get<{ places: Place[] }>(url).pipe(
